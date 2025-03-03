@@ -2,26 +2,22 @@
 
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { v4 as uuidv4 } from 'uuid';
 import { fetchMetalPrices } from './services/metalPrices';
 import FamilyForm from './components/forms/FamilyForm';
 import CashAssetsForm from './components/forms/CashAssetsForm';
 import GoldAssetsForm from './components/forms/GoldAssetsForm';
 import SilverAssetsForm from './components/forms/SilverAssetsForm';
 import Card from './components/ui/Card';
-import Button from './components/ui/Button';
 import ProgressBar from './components/ui/ProgressBar';
 import FormStep from './components/ui/FormStep';
 import ThemeToggle from './components/ui/ThemeToggle';
 import { 
   FamilyMember, 
-  Asset, 
   CashAsset, 
   GoldAsset, 
   SilverAsset, 
   FormStep as FormStepType,
-  ZakatCalculation,
-  Debt
+  ZakatCalculation
 } from './types';
 
 export default function Home() {
@@ -30,7 +26,6 @@ export default function Home() {
   const [cashAssets, setCashAssets] = useState<CashAsset[]>([]);
   const [goldAssets, setGoldAssets] = useState<GoldAsset[]>([]);
   const [silverAssets, setSilverAssets] = useState<SilverAsset[]>([]);
-  const [debts, setDebts] = useState<Debt[]>([]);
   const [goldPrice, setGoldPrice] = useState(75); // Default price per gram in USD
   const [silverPrice, setSilverPrice] = useState(1.2); // Default price per gram in USD
   const [zakatCalculations, setZakatCalculations] = useState<ZakatCalculation[]>([]);
@@ -183,7 +178,6 @@ export default function Home() {
       }
       
       let totalAssetValue = 0;
-      let totalDeductibleDebt = 0;
       
       // Calculate cash assets
       cashAssets.forEach(asset => {
@@ -239,15 +233,8 @@ export default function Home() {
         }
       });
       
-      // Calculate deductible debts
-      debts.forEach(debt => {
-        if (debt.ownerId === member.id && debt.isShortTerm) {
-          totalDeductibleDebt += debt.amount;
-        }
-      });
-      
       // Calculate net assets
-      const netAssets = totalAssetValue - totalDeductibleDebt;
+      const netAssets = totalAssetValue;
       
       // Determine if eligible for Zakat
       const isEligibleForZakat = netAssets >= nisabThreshold;
@@ -259,7 +246,7 @@ export default function Home() {
       calculations.push({
         familyMemberId: member.id,
         totalAssetValue,
-        totalDeductibleDebt,
+        totalDeductibleDebt: 0,
         nisabThreshold,
         isEligibleForZakat,
         zakatAmount
@@ -284,7 +271,7 @@ export default function Home() {
       return (
         <div className="text-center py-8">
           <p className="text-lg text-secondary-700 dark:text-secondary-300">
-            Click "Calculate Zakat" to see your results based on the information provided.
+            Click &lsquo;Calculate Zakat&rsquo; to see your results based on the information provided.
           </p>
         </div>
       );
@@ -409,7 +396,7 @@ export default function Home() {
               onPrevious={handlePrevious}
               isFirstStep={currentStep === 0}
               isLastStep={currentStep === steps.length - 1}
-              nextButtonText={currentStep === steps.length - 1 ? "Calculate Zakat" : "Next"}
+              nextButtonText={currentStep === steps.length - 1 ? 'Calculate Zakat' : 'Next'}
             >
               {renderCurrentStep()}
             </FormStep>

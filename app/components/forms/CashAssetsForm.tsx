@@ -47,7 +47,7 @@ const CashAssetsForm: React.FC<CashAssetsFormProps> = ({
     onUpdate(updatedAssets);
   };
 
-  const handleAssetChange = (index: number, field: keyof CashAsset, value: any) => {
+  const handleAssetChange = (index: number, field: keyof CashAsset, value: string | number | boolean) => {
     const updatedAssets = [...cashAssets];
     updatedAssets[index] = {
       ...updatedAssets[index],

@@ -49,7 +49,7 @@ const GoldAssetsForm: React.FC<GoldAssetsFormProps> = ({
     onUpdate(updatedAssets);
   };
 
-  const handleAssetChange = (index: number, field: keyof GoldAsset, value: any) => {
+  const handleAssetChange = (index: number, field: keyof GoldAsset, value: string | number | boolean) => {
     const updatedAssets = [...goldAssets];
     updatedAssets[index] = {
       ...updatedAssets[index],

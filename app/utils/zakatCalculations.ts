@@ -52,7 +52,7 @@ export const calculateTotalAssets = (
       
       case 'gold':
         // Calculate gold value based on karat
-        const purityFactor = asset.karatValue / 24;
+        const purityFactor = asset.karat / 24;
         assetValue = asset.weightInGrams * goldPricePerGram * purityFactor;
         break;
       
@@ -62,18 +62,17 @@ export const calculateTotalAssets = (
         break;
       
       case 'investment':
-        assetValue = asset.amount;
+        assetValue = asset.currentValue;
         break;
       
       case 'business':
         // For business assets, we include inventory, cash, and receivables
-        // according to Hanafi school
-        assetValue = asset.inventoryValue + asset.cashHoldings + asset.accountsReceivable;
+        assetValue = asset.inventoryValue + asset.cashValue + asset.receivablesValue;
         break;
       
-      case 'other':
-        // Only include if it's zakatable
-        assetValue = asset.isZakatable ? asset.amount : 0;
+      case 'real_estate':
+        // Only include if it's for investment
+        assetValue = asset.isForInvestment ? asset.currentValue : 0;
         break;
     }
 
@@ -133,29 +132,27 @@ export const calculateZakat = (
   
   return familyMembers
     // Only calculate Zakat for family members who have reached puberty
-    .filter(member => member.isPubertyReached)
+    .filter(member => member.isPubescent)
     .map(member => {
-      const totalAssets = calculateTotalAssets(
+      const totalAssetValue = calculateTotalAssets(
         assets,
         member.id,
         goldPricePerGram,
         silverPricePerGram
       );
       
-      const totalLiabilities = calculateTotalLiabilities(liabilities, member.id);
-      const netWorth = totalAssets - totalLiabilities;
+      const totalDeductibleDebt = calculateTotalLiabilities(liabilities, member.id);
+      const netWorth = totalAssetValue - totalDeductibleDebt;
       const isEligibleForZakat = netWorth >= nisabThreshold;
       const zakatAmount = isEligibleForZakat ? netWorth * ZAKAT_RATE : 0;
       
       return {
         familyMemberId: member.id,
-        totalAssets,
-        totalLiabilities,
-        netWorth,
+        totalAssetValue,
+        totalDeductibleDebt,
         nisabThreshold,
         isEligibleForZakat,
-        zakatAmount,
-        currency: 'USD'
+        zakatAmount
       };
     });
 }; 

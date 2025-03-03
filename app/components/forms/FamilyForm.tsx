@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import { v4 as uuidv4 } from 'uuid';
 import Card from '../ui/Card';
 import Input from '../ui/Input';
-import Button from '../ui/Button';
 import Checkbox from '../ui/Checkbox';
 import { FamilyMember } from '../../types';
 
@@ -110,7 +109,7 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ familyMembers, onUpdate }) => {
     }
   };
   
-  const updateFamilyMembers = () => {
+  const updateFamilyMembers = React.useCallback(() => {
     const allMembers: FamilyMember[] = [primaryMember];
     
     if (hasSpouse) {
@@ -122,11 +121,11 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ familyMembers, onUpdate }) => {
     }
     
     onUpdate(allMembers);
-  };
+  }, [primaryMember, spouse, children, hasSpouse, childrenCount, onUpdate]);
   
   useEffect(() => {
     updateFamilyMembers();
-  }, [primaryMember, spouse, children, hasSpouse, childrenCount]);
+  }, [updateFamilyMembers]);
   
   return (
     <div className="space-y-6">
