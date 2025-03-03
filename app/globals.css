@@ -1,0 +1,437 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+}
+
+:root,
+.light {
+  /* Light mode colors */
+  --background: #ffffff;
+  --foreground: #171717;
+  --card: #ffffff;
+  --card-foreground: #171717;
+  --popover: #ffffff;
+  --popover-foreground: #171717;
+  --primary-50: #f0f9ff;
+  --primary-100: #e0f2fe;
+  --primary-200: #bae6fd;
+  --primary-300: #7dd3fc;
+  --primary-400: #38bdf8;
+  --primary-500: #0ea5e9;
+  --primary-600: #0284c7;
+  --primary-700: #0369a1;
+  --primary-800: #075985;
+  --primary-900: #0c4a6e;
+  
+  --secondary-50: #f8fafc;
+  --secondary-100: #f1f5f9;
+  --secondary-200: #e2e8f0;
+  --secondary-300: #cbd5e1;
+  --secondary-400: #94a3b8;
+  --secondary-500: #64748b;
+  --secondary-600: #475569;
+  --secondary-700: #334155;
+  --secondary-800: #1e293b;
+  --secondary-900: #0f172a;
+  --secondary-950: #020617;
+  
+  --muted: #f1f5f9;
+  --muted-foreground: #64748b;
+  
+  --accent: #f1f5f9;
+  --accent-foreground: #0f172a;
+  
+  --success: #10b981;
+  --warning: #f59e0b;
+  --error: #ef4444;
+  --info: #3b82f6;
+
+  --border: #e2e8f0;
+  --input: #e2e8f0;
+  --ring: #0ea5e9;
+  
+  --radius: 0.5rem;
+}
+
+.dark {
+  /* Dark mode colors with high contrast */
+  --background: #0f172a; /* Dark navy blue background */
+  --foreground: #ffffff; /* Pure white text for maximum contrast */
+  --card: #1e293b;
+  --card-foreground: #ffffff;
+  --popover: #1e293b;
+  --popover-foreground: #ffffff;
+  
+  /* Primary blues for dark mode - much brighter */
+  --primary-50: #0f172a;
+  --primary-100: #172554;
+  --primary-200: #1e3a8a;
+  --primary-300: #2563eb;
+  --primary-400: #3b82f6;
+  --primary-500: #60a5fa;
+  --primary-600: #93c5fd;
+  --primary-700: #bfdbfe;
+  --primary-800: #dbeafe;
+  --primary-900: #eff6ff;
+  
+  /* Secondary grays/blues for dark mode */
+  --secondary-50: #020617;
+  --secondary-100: #0f172a;
+  --secondary-200: #1e293b;
+  --secondary-300: #334155;
+  --secondary-400: #475569;
+  --secondary-500: #64748b;
+  --secondary-600: #94a3b8;
+  --secondary-700: #cbd5e1;
+  --secondary-800: #e2e8f0;
+  --secondary-900: #f1f5f9;
+  --secondary-950: #f8fafc;
+  
+  --muted: #1e293b;
+  --muted-foreground: #cbd5e1; /* Much lighter for better contrast */
+  
+  --accent: #60a5fa; /* Vibrant blue accent */
+  --accent-foreground: #ffffff;
+  
+  --success: #059669;
+  --warning: #d97706;
+  --error: #dc2626;
+  --info: #2563eb;
+
+  --border: #334155;
+  --input: #334155;
+  --ring: #60a5fa;
+}
+
+/* Apply dark mode to the root HTML */
+html {
+  background-color: var(--background);
+  color: var(--foreground);
+}
+
+/* Base body styles */
+body {
+  color: var(--foreground);
+  background-color: var(--background);
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  transition: background-color 0.3s ease, color 0.3s ease;
+  min-height: 100vh;
+  width: 100%;
+}
+
+/* Headings with improved contrast */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--primary-800);
+  font-weight: 600;
+}
+
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #ffffff; /* Pure white for maximum contrast */
+}
+
+/* Title styles */
+.dark .text-4xl.font-bold.text-primary-700 {
+  color: #ffffff !important;
+}
+
+.dark .text-primary-400 {
+  color: #93c5fd !important; /* Light blue for headings in dark mode */
+}
+
+/* Subtitle styles */
+.dark .text-lg.text-primary-600 {
+  color: #93c5fd !important; /* Light blue for subtitles */
+}
+
+/* Paragraph text */
+p {
+  color: var(--foreground);
+  line-height: 1.6;
+}
+
+.dark p {
+  color: #e2e8f0 !important; /* Light gray for better contrast */
+}
+
+/* Step text */
+.dark .text-secondary-700 {
+  color: #ffffff !important; /* White for maximum contrast */
+}
+
+/* Form labels and descriptions */
+.dark .text-secondary-700, 
+.dark .text-secondary-600 {
+  color: #e2e8f0 !important; /* Light gray for better visibility */
+}
+
+/* Form elements */
+input, select, textarea {
+  border-color: var(--input);
+  color: var(--foreground);
+  background-color: var(--background);
+  transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+input:focus, select:focus, textarea:focus {
+  border-color: var(--ring);
+  box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
+}
+
+.dark input, .dark select, .dark textarea {
+  border-color: #4b5563; /* Medium gray border */
+  background-color: #1e293b; /* Slightly lighter than background */
+  color: #f8fafc; /* Very light color for text */
+}
+
+/* Form input placeholders */
+.dark ::placeholder {
+  color: #94a3b8 !important;
+}
+
+/* Buttons */
+button {
+  font-weight: 500;
+}
+
+.dark button:not(.theme-toggle) {
+  background-color: #3b82f6 !important; /* Bright blue */
+  color: #ffffff !important;
+  border-color: #3b82f6 !important;
+}
+
+.dark button:not(.theme-toggle):hover {
+  background-color: #2563eb !important; /* Darker blue on hover */
+}
+
+/* Navigation improvements */
+.text-gray-500, .text-gray-600, .text-gray-700 {
+  color: var(--secondary-700) !important;
+}
+
+.dark .text-gray-500, .dark .text-gray-600, .dark .text-gray-700 {
+  color: #e2e8f0 !important; /* Light gray for better visibility */
+}
+
+/* Progress bar enhancements */
+.dark .bg-primary-600 {
+  background-color: #3b82f6 !important; /* Bright blue */
+}
+
+.dark .text-primary-600 {
+  color: #60a5fa !important; /* Lighter blue for text */
+}
+
+.dark .text-primary-800 {
+  color: #93c5fd !important; /* Even lighter blue */
+}
+
+/* Progress steps */
+.dark .bg-secondary-100 {
+  background-color: #1e293b !important; /* Slightly lighter background */
+}
+
+.dark .text-secondary-500 {
+  color: #ffffff !important; /* White text */
+}
+
+/* Active step */
+.dark .ring-primary-600 {
+  --tw-ring-color: #3b82f6 !important; /* Bright blue ring */
+}
+
+.dark .bg-primary-600 {
+  background-color: #3b82f6 !important; /* Bright blue background */
+}
+
+/* Card improvements */
+.dark .bg-gray-50 {
+  background-color: #1e293b !important; /* Slightly lighter background */
+}
+
+.bg-white {
+  background-color: var(--card) !important;
+}
+
+/* Helper text */
+.dark .text-sm.text-gray-500 {
+  color: #cbd5e1 !important; /* Light gray */
+}
+
+/* Form container */
+.dark .bg-secondary-100.rounded-xl {
+  background-color: #1e293b !important; /* Slightly lighter than background */
+}
+
+/* Family information sections */
+.dark .text-blue-600 {
+  color: #60a5fa !important; /* Light blue */
+}
+
+/* Theme toggle animation */
+.theme-toggle {
+  transition: transform 0.5s ease;
+}
+
+.theme-toggle:hover {
+  transform: rotate(45deg);
+}
+
+/* Fix for gradient backgrounds in dark mode */
+.dark .from-blue-50 {
+  --tw-gradient-from: #1e293b !important; /* Slightly lighter than background */
+}
+
+.dark .to-white {
+  --tw-gradient-to: #0f172a !important; /* Same as background */
+}
+
+/* Make sure ALL elements inherit dark mode */
+.dark * {
+  border-color: var(--border);
+}
+
+/* Explicit dark mode overrides */
+.dark {
+  color-scheme: dark;
+}
+
+/* Main container */
+.dark [class*="min-h-screen"] {
+  background-color: #0f172a !important;
+}
+
+/* Top level container */
+.dark [class*="min-h-screen bg-gradient"] {
+  background: linear-gradient(to bottom, #1e293b, #0f172a) !important;
+}
+
+/* Form container card */
+.dark .rounded-xl {
+  background-color: #1e293b !important;
+  color: #ffffff !important;
+}
+
+/* Secondary text override */
+.dark .text-secondary-900 {
+  color: #ffffff !important;
+}
+
+/* Progress bar circles */
+.dark [class*="w-12 h-12"] {
+  background-color: #334155 !important;
+  color: #ffffff !important;
+}
+
+.dark [class*="w-12 h-12"][aria-current="true"] {
+  background-color: #3b82f6 !important;
+  color: #ffffff !important;
+  --tw-ring-color: #60a5fa !important;
+}
+
+/* Section titles */
+.dark h2[class*="text-xl font-semibold"] {
+  color: #93c5fd !important;
+}
+
+/* Field labels */
+.dark label {
+  color: #e2e8f0 !important;
+}
+
+/* Form field specific fixes */
+.dark .input-wrapper {
+  background-color: transparent;
+}
+
+.dark input[type="text"],
+.dark input[type="number"],
+.dark input[type="email"],
+.dark select {
+  background-color: #1e293b;
+  color: #ffffff;
+  border: 1px solid #4b5563;
+  padding: 0.5rem 0.75rem;
+}
+
+/* Checkbox styles */
+.dark input[type="checkbox"] {
+  border: 1px solid #4b5563;
+}
+
+/* Light text for all paragraphs */
+.dark .text-blue-600,
+.dark .text-primary-600,
+.dark .text-gray-600 {
+  color: #bfdbfe;
+}
+
+/* Fix for form cards in dark mode - ensure they get proper background */
+.dark .bg-white {
+  background-color: #1e293b !important;
+  color: white !important;
+}
+
+/* Info boxes and notices */
+.dark .bg-blue-50 {
+  background-color: #172554 !important;
+  color: #bfdbfe !important;
+  border-color: #3b82f6 !important;
+}
+
+/* Form field containers */
+.dark .form-container,
+.dark [class*="p-6 bg-white"] {
+  background-color: #1e293b !important;
+  color: white !important;
+}
+
+/* Cash asset info box */
+.dark div[class*="p-4 bg-blue-50"] {
+  background-color: #172554 !important;
+}
+
+.dark div[class*="p-4 bg-blue-50"] p {
+  color: #bfdbfe !important;
+}
+
+/* Card and box backgrounds */
+.dark .rounded-lg,
+.dark .rounded-xl {
+  background-color: #1e293b !important;
+}
+
+/* Make all cards have dark background */
+.dark [class*="bg-white"] {
+  background-color: #1e293b !important;
+}
+
+/* Add asset button */
+.dark button[class*="bg-blue-500"] {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+/* Next/Previous buttons */
+.dark button.bg-blue-500,
+.dark button.bg-blue-600,
+.dark button.bg-blue-700 {
+  background-color: #3b82f6 !important;
+  color: white !important;
+}
+
+/* Ensure all text elements in dark mode have good contrast */
+.dark label,
+.dark h2,
+.dark h3,
+.dark p {
+  color: #f8fafc !important;
+}
+
+/* Fix blue text on dark backgrounds */
+.dark .text-blue-500,
+.dark .text-blue-600,
+.dark .text-blue-700 {
+  color: #60a5fa !important;
+}
