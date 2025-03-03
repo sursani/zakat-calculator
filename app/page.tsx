@@ -71,6 +71,97 @@ export default function Home() {
     };
   }, []);
 
+  // Calculate Zakat for each family member
+  const calculateZakat = useCallback(() => {
+    setIsCalculating(true);
+    
+    // Nisab thresholds (in USD)
+    const goldNisab = 85 * goldPrice; // 85 grams of gold
+    const silverNisab = 595 * silverPrice; // 595 grams of silver
+    
+    // Use the lower of the two nisab values
+    const nisabThreshold = Math.min(goldNisab, silverNisab);
+    
+    const calculations: ZakatCalculation[] = [];
+    
+    // Calculate Zakat for each adult family member
+    familyMembers.forEach(member => {
+      // Skip children who haven't reached puberty
+      if (member.relationship === 'child' && member.isPubescent === false) {
+        return;
+      }
+      
+      let totalAssetValue = 0;
+      
+      // Calculate cash assets
+      cashAssets.forEach(asset => {
+        if (asset.ownerId === member.id) {
+          // If solely owned
+          if (!asset.isJoint) {
+            totalAssetValue += asset.amount;
+          } else {
+            // If jointly owned, calculate based on ownership percentage
+            totalAssetValue += asset.amount * (asset.ownershipPercentage / 100);
+          }
+        } else if (asset.isJoint && asset.jointOwnerId === member.id) {
+          // If this member is the joint owner
+          totalAssetValue += asset.amount * ((100 - asset.ownershipPercentage) / 100);
+        }
+      });
+      
+      // Calculate gold assets
+      goldAssets.forEach(asset => {
+        if (asset.ownerId === member.id) {
+          const purity = asset.karat / 24; // Convert karat to percentage of pure gold
+          const value = asset.weightInGrams * goldPrice * purity;
+          
+          if (!asset.isJoint) {
+            totalAssetValue += value;
+          } else {
+            totalAssetValue += value * (asset.ownershipPercentage / 100);
+          }
+        } else if (asset.isJoint && asset.jointOwnerId === member.id) {
+          const purity = asset.karat / 24;
+          const value = asset.weightInGrams * goldPrice * purity;
+          totalAssetValue += value * ((100 - asset.ownershipPercentage) / 100);
+        }
+      });
+      
+      // Calculate silver assets
+      silverAssets.forEach(asset => {
+        if (asset.ownerId === member.id) {
+          const purity = asset.purity / 100; // Convert purity percentage to decimal
+          const value = asset.weightInGrams * silverPrice * purity;
+          
+          if (!asset.isJoint) {
+            totalAssetValue += value;
+          } else {
+            totalAssetValue += value * (asset.ownershipPercentage / 100);
+          }
+        } else if (asset.isJoint && asset.jointOwnerId === member.id) {
+          const purity = asset.purity / 100;
+          const value = asset.weightInGrams * silverPrice * purity;
+          totalAssetValue += value * ((100 - asset.ownershipPercentage) / 100);
+        }
+      });
+      
+      // Calculate Zakat amount (2.5% of total eligible assets)
+      const zakatAmount = totalAssetValue >= nisabThreshold ? totalAssetValue * 0.025 : 0;
+      
+      calculations.push({
+        familyMemberId: member.id,
+        totalAssetValue,
+        totalDeductibleDebt: 0,
+        nisabThreshold,
+        isEligibleForZakat: totalAssetValue >= nisabThreshold,
+        zakatAmount
+      });
+    });
+    
+    setZakatCalculations(calculations);
+    setIsCalculating(false);
+  }, [familyMembers, cashAssets, goldAssets, silverAssets, goldPrice, silverPrice]);
+
   const handleNext = useCallback(() => {
     if (currentStep === steps.length - 1) {
       // This is the last step, calculate Zakat
@@ -78,7 +169,7 @@ export default function Home() {
     } else {
       setCurrentStep(prev => prev + 1);
     }
-  }, [currentStep, steps.length]);
+  }, [currentStep, steps.length, calculateZakat]);
 
   const handlePrevious = useCallback(() => {
     setCurrentStep(prev => prev - 1);
@@ -121,6 +212,92 @@ export default function Home() {
     }
   }, []);
 
+  // Render Zakat calculation results
+  const renderZakatResults = () => {
+    if (isCalculating) {
+      return <div className="text-center">Calculating...</div>;
+    }
+    
+    if (zakatCalculations.length === 0) {
+      return (
+        <div className="text-center p-8">
+          <p className="text-lg text-gray-600 dark:text-gray-300">No calculations available. Please make sure you have added family members and assets.</p>
+          <button 
+            onClick={() => setCurrentStep(0)}
+            className="mt-4 px-4 py-2 bg-primary-600 text-white rounded-md hover:bg-primary-700 transition-colors"
+          >
+            Go to Family Information
+          </button>
+        </div>
+      );
+    }
+    
+    return (
+      <div className="space-y-8">
+        <div className="bg-primary-50 dark:bg-primary-900/30 p-4 rounded-md mb-6 border border-primary-100 dark:border-primary-800">
+          <h3 className="text-lg font-medium text-primary-800 dark:text-primary-200 mb-2">Zakat Calculation Results</h3>
+          <p className="text-primary-600 dark:text-primary-300">
+            Below are the Zakat calculations for each eligible family member based on the provided asset information.
+            The Nisab threshold is calculated using the lower value of gold ({goldPrice.toFixed(2)}/gram) or silver ({silverPrice.toFixed(2)}/gram).
+          </p>
+        </div>
+        
+        <div className="space-y-8">
+          {zakatCalculations.map(calc => {
+            const member = familyMembers.find(m => m.id === calc.familyMemberId);
+            
+            return (
+              <Card 
+                key={calc.familyMemberId}
+                title={`${member?.name || 'Family Member'}'s Zakat Calculation`}
+              >
+                <div className="space-y-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="p-4 bg-secondary-50 dark:bg-secondary-200 rounded-md">
+                      <p className="text-sm font-medium text-secondary-600 dark:text-secondary-800">Total Assets</p>
+                      <p className="text-xl font-bold text-secondary-900 dark:text-secondary-900">
+                        ${calc.totalAssetValue.toFixed(2)}
+                      </p>
+                    </div>
+                    
+                    <div className="p-4 bg-secondary-50 dark:bg-secondary-200 rounded-md">
+                      <p className="text-sm font-medium text-secondary-600 dark:text-secondary-800">Zakat Amount</p>
+                      <p className="text-xl font-bold text-secondary-900 dark:text-secondary-900">
+                        ${calc.zakatAmount.toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
+                  
+                  <div className="p-4 bg-secondary-50 dark:bg-secondary-200 rounded-md">
+                    <p className="text-sm font-medium text-secondary-600 dark:text-secondary-800">Nisab Threshold</p>
+                    <p className="text-xl font-bold text-secondary-900 dark:text-secondary-900">
+                      ${calc.nisabThreshold.toFixed(2)}
+                    </p>
+                    <p className="text-xs text-secondary-500 dark:text-secondary-700 mt-1">
+                      Based on the lower value of gold (85g = ${(85 * goldPrice).toFixed(2)}) or silver (595g = ${(595 * silverPrice).toFixed(2)})
+                    </p>
+                  </div>
+                  
+                  <div className={`p-4 rounded-md ${calc.isEligibleForZakat ? 'bg-success/10' : 'bg-secondary-50 dark:bg-secondary-200'}`}>
+                    <p className="text-sm font-medium text-secondary-600 dark:text-secondary-800">Zakat Status</p>
+                    <p className={`text-xl font-bold ${calc.isEligibleForZakat ? 'text-success' : 'text-secondary-500 dark:text-secondary-700'}`}>
+                      {calc.isEligibleForZakat ? 'Eligible for Zakat' : 'Not Eligible for Zakat'}
+                    </p>
+                    <p className="text-xs text-secondary-500 dark:text-secondary-700 mt-1">
+                      {calc.isEligibleForZakat 
+                        ? 'Net assets exceed the nisab threshold' 
+                        : 'Net assets do not exceed the nisab threshold'}
+                    </p>
+                  </div>
+                </div>
+              </Card>
+            );
+          })}
+        </div>
+      </div>
+    );
+  };
+
   const renderCurrentStep = () => {
     switch (steps[currentStep]) {
       case 'family':
@@ -161,213 +338,6 @@ export default function Home() {
       default:
         return null;
     }
-  };
-
-  // Calculate Zakat for each family member
-  const calculateZakat = useCallback(() => {
-    setIsCalculating(true);
-    
-    // Nisab thresholds (in USD)
-    const goldNisab = 85 * goldPrice; // 85 grams of gold
-    const silverNisab = 595 * silverPrice; // 595 grams of silver
-    
-    // Use the lower of the two nisab values
-    const nisabThreshold = Math.min(goldNisab, silverNisab);
-    
-    const calculations: ZakatCalculation[] = [];
-    
-    // Calculate Zakat for each adult family member
-    familyMembers.forEach(member => {
-      // Skip children who haven't reached puberty
-      if (member.relationship === 'child' && member.isPubescent === false) {
-        return;
-      }
-      
-      let totalAssetValue = 0;
-      
-      // Calculate cash assets
-      cashAssets.forEach(asset => {
-        if (asset.ownerId === member.id) {
-          // If solely owned
-          if (!asset.isJoint) {
-            totalAssetValue += asset.amount;
-          } else {
-            // If jointly owned, calculate based on ownership percentage
-            totalAssetValue += asset.amount * (asset.ownershipPercentage / 100);
-          }
-        } else if (asset.isJoint && asset.jointOwnerId === member.id) {
-          // If this member is the joint owner
-          totalAssetValue += asset.amount * ((100 - asset.ownershipPercentage) / 100);
-        }
-      });
-      
-      // Calculate gold assets
-      goldAssets.forEach(asset => {
-        if (asset.ownerId === member.id) {
-          // Calculate gold value based on weight, karat, and current price
-          const purityFactor = asset.karat / 24;
-          const goldValue = asset.weightInGrams * goldPrice * purityFactor;
-          
-          if (!asset.isJoint) {
-            totalAssetValue += goldValue;
-          } else {
-            totalAssetValue += goldValue * (asset.ownershipPercentage / 100);
-          }
-        } else if (asset.isJoint && asset.jointOwnerId === member.id) {
-          const purityFactor = asset.karat / 24;
-          const goldValue = asset.weightInGrams * goldPrice * purityFactor;
-          totalAssetValue += goldValue * ((100 - asset.ownershipPercentage) / 100);
-        }
-      });
-      
-      // Calculate silver assets
-      silverAssets.forEach(asset => {
-        if (asset.ownerId === member.id) {
-          // Calculate silver value based on weight, purity, and current price
-          const purityFactor = asset.purity / 100;
-          const silverValue = asset.weightInGrams * silverPrice * purityFactor;
-          
-          if (!asset.isJoint) {
-            totalAssetValue += silverValue;
-          } else {
-            totalAssetValue += silverValue * (asset.ownershipPercentage / 100);
-          }
-        } else if (asset.isJoint && asset.jointOwnerId === member.id) {
-          const purityFactor = asset.purity / 100;
-          const silverValue = asset.weightInGrams * silverPrice * purityFactor;
-          totalAssetValue += silverValue * ((100 - asset.ownershipPercentage) / 100);
-        }
-      });
-      
-      // Calculate net assets
-      const netAssets = totalAssetValue;
-      
-      // Determine if eligible for Zakat
-      const isEligibleForZakat = netAssets >= nisabThreshold;
-      
-      // Calculate Zakat amount (2.5% of net assets if eligible)
-      const zakatAmount = isEligibleForZakat ? netAssets * 0.025 : 0;
-      
-      // Add to calculations
-      calculations.push({
-        familyMemberId: member.id,
-        totalAssetValue,
-        totalDeductibleDebt: 0,
-        nisabThreshold,
-        isEligibleForZakat,
-        zakatAmount
-      });
-    });
-    
-    setZakatCalculations(calculations);
-    setIsCalculating(false);
-  }, [familyMembers, cashAssets, goldAssets, silverAssets, goldPrice, silverPrice]);
-
-  // Render Zakat calculation results
-  const renderZakatResults = () => {
-    if (isCalculating) {
-      return (
-        <div className="flex justify-center items-center py-12">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary-600"></div>
-        </div>
-      );
-    }
-    
-    if (zakatCalculations.length === 0) {
-      return (
-        <div className="text-center py-8">
-          <p className="text-lg text-secondary-700 dark:text-secondary-300">
-            Click &lsquo;Calculate Zakat&rsquo; to see your results based on the information provided.
-          </p>
-        </div>
-      );
-    }
-    
-    // Calculate total Zakat for all family members
-    const totalZakat = zakatCalculations.reduce((sum, calc) => sum + calc.zakatAmount, 0);
-    
-    return (
-      <div className="space-y-8">
-        <div className="bg-primary-50 dark:bg-primary-100 p-6 rounded-lg shadow-md">
-          <h3 className="text-xl font-bold text-primary-800 dark:text-primary-900 mb-2">
-            Total Zakat Due: ${totalZakat.toFixed(2)}
-          </h3>
-          <p className="text-primary-700 dark:text-primary-800">
-            Based on current gold price (${goldPrice.toFixed(2)}/g) and silver price (${silverPrice.toFixed(2)}/g)
-          </p>
-        </div>
-        
-        {zakatCalculations.map(calc => {
-          const member = familyMembers.find(m => m.id === calc.familyMemberId);
-          
-          return (
-            <Card 
-              key={calc.familyMemberId}
-              title={`${member?.name || 'Family Member'}'s Zakat Calculation`}
-            >
-              <div className="space-y-4">
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <div className="p-4 bg-secondary-50 dark:bg-secondary-200 rounded-md">
-                    <p className="text-sm font-medium text-secondary-600 dark:text-secondary-800">Total Assets</p>
-                    <p className="text-xl font-bold text-secondary-900 dark:text-secondary-900">
-                      ${calc.totalAssetValue.toFixed(2)}
-                    </p>
-                  </div>
-                  
-                  <div className="p-4 bg-secondary-50 dark:bg-secondary-200 rounded-md">
-                    <p className="text-sm font-medium text-secondary-600 dark:text-secondary-800">Deductible Debts</p>
-                    <p className="text-xl font-bold text-secondary-900 dark:text-secondary-900">
-                      ${calc.totalDeductibleDebt.toFixed(2)}
-                    </p>
-                  </div>
-                </div>
-                
-                <div className="p-4 bg-secondary-50 dark:bg-secondary-200 rounded-md">
-                  <p className="text-sm font-medium text-secondary-600 dark:text-secondary-800">Net Assets</p>
-                  <p className="text-xl font-bold text-secondary-900 dark:text-secondary-900">
-                    ${(calc.totalAssetValue - calc.totalDeductibleDebt).toFixed(2)}
-                  </p>
-                </div>
-                
-                <div className="p-4 bg-secondary-50 dark:bg-secondary-200 rounded-md">
-                  <p className="text-sm font-medium text-secondary-600 dark:text-secondary-800">Nisab Threshold</p>
-                  <p className="text-xl font-bold text-secondary-900 dark:text-secondary-900">
-                    ${calc.nisabThreshold.toFixed(2)}
-                  </p>
-                  <p className="text-xs text-secondary-500 dark:text-secondary-700 mt-1">
-                    Based on the lower of gold nisab (85g) and silver nisab (595g)
-                  </p>
-                </div>
-                
-                <div className={`p-4 rounded-md ${calc.isEligibleForZakat ? 'bg-success/10' : 'bg-secondary-50 dark:bg-secondary-200'}`}>
-                  <p className="text-sm font-medium text-secondary-600 dark:text-secondary-800">Zakat Status</p>
-                  <p className={`text-xl font-bold ${calc.isEligibleForZakat ? 'text-success' : 'text-secondary-500 dark:text-secondary-700'}`}>
-                    {calc.isEligibleForZakat ? 'Eligible for Zakat' : 'Not Eligible for Zakat'}
-                  </p>
-                  <p className="text-xs text-secondary-500 dark:text-secondary-700 mt-1">
-                    {calc.isEligibleForZakat 
-                      ? 'Net assets exceed the nisab threshold' 
-                      : 'Net assets do not exceed the nisab threshold'}
-                  </p>
-                </div>
-                
-                {calc.isEligibleForZakat && (
-                  <div className="p-4 bg-primary-50 dark:bg-primary-100 rounded-md border-2 border-primary-200 dark:border-primary-300">
-                    <p className="text-sm font-medium text-primary-700 dark:text-primary-900">Zakat Amount Due</p>
-                    <p className="text-2xl font-bold text-primary-800 dark:text-primary-900">
-                      ${calc.zakatAmount.toFixed(2)}
-                    </p>
-                    <p className="text-xs text-primary-600 dark:text-primary-800 mt-1">
-                      2.5% of net assets
-                    </p>
-                  </div>
-                )}
-              </div>
-            </Card>
-          );
-        })}
-      </div>
-    );
   };
 
   return (

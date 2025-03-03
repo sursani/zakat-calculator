@@ -1,5 +1,6 @@
-import axios from 'axios';
-import { GoldPriceApiResponse, SilverPriceApiResponse } from '../types';
+// Remove the unused axios import since we're using fallback values
+// import axios from 'axios';
+// import { GoldPriceApiResponse, SilverPriceApiResponse } from '../types';
 
 // Define default/fallback metal prices
 const DEFAULT_GOLD_PRICE = 75.0; // USD per gram
