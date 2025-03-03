@@ -1,36 +1,75 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Zakat Calculator
+
+A modern, user-friendly web application built with Next.js to help Muslims calculate their annual Zakat obligations accurately and efficiently.
+
+## Features
+
+- 📱 Responsive design that works on desktop and mobile devices
+- 🌙 Dark/Light mode support
+- 💰 Comprehensive asset calculation including:
+  - Cash assets
+  - Gold assets (with different purities)
+  - Silver assets
+- 💹 Real-time precious metal prices
+- 👨‍👩‍👧‍👦 Family member tracking
+- 🧮 Accurate calculations based on Islamic guidelines
+- ⚡ Fast, client-side calculations
+- 🔒 Privacy-focused (all calculations done locally)
+
+## Technology Stack
+
+- **Framework**: Next.js 14 with App Router
+- **Language**: TypeScript
+- **Styling**: Tailwind CSS
+- **UI Components**: Custom-built React components
+- **State Management**: React Hooks
+- **Metal Prices**: Integration with external API for current rates
 
 ## Getting Started
 
-First, run the development server:
-
+1. Clone the repository:
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+git clone https://github.com/sursani/zakat-calculator.git
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+2. Install dependencies:
+```bash
+cd zakat-calculator
+npm install
+```
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+3. Run the development server:
+```bash
+npm run dev
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+4. Open [http://localhost:3000](http://localhost:3000) in your browser
 
-## Learn More
+## How It Works
 
-To learn more about Next.js, take a look at the following resources:
+The Zakat Calculator helps users:
+1. Input their various assets (cash, gold, silver)
+2. Track family members and dependents
+3. Calculate their Zakat threshold (Nisab)
+4. Determine if they are eligible to pay Zakat
+5. Calculate the exact amount of Zakat due
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Islamic Guidelines
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+This calculator follows these key principles:
+- Zakat rate of 2.5% on eligible assets
+- Nisab calculation based on gold and silver values
+- Annual (Hijri year) calculation period
+- Consideration of personal possession and intention of trade
 
-## Deploy on Vercel
+## Contributing
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Contributions are welcome! Please feel free to submit a Pull Request. For major changes, please open an issue first to discuss what you would like to change.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+## Support
+
+If you find any bugs or have feature requests, please create an issue in the GitHub repository.
