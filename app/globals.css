@@ -123,8 +123,13 @@ body {
 
 /* Headings with improved contrast */
 h1, h2, h3, h4, h5, h6 {
-  color: var(--primary-800);
+  color: var(--foreground);
   font-weight: 600;
+}
+
+/* Light mode specific heading styles for better contrast */
+.light h1, .light h2, .light h3, .light h4, .light h5, .light h6 {
+  color: #0f172a !important;
 }
 
 .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
@@ -132,8 +137,16 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Title styles */
+.light .text-4xl.font-bold.text-primary-700 {
+  color: #0369a1 !important; /* Darker blue for better contrast in light mode */
+}
+
 .dark .text-4xl.font-bold.text-primary-700 {
   color: #ffffff !important;
+}
+
+.light .text-primary-400 {
+  color: #0284c7 !important; /* Darker blue for better contrast */
 }
 
 .dark .text-primary-400 {
@@ -141,6 +154,10 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 /* Subtitle styles */
+.light .text-lg.text-primary-600 {
+  color: #0369a1 !important; /* Darker blue for better contrast */
+}
+
 .dark .text-lg.text-primary-600 {
   color: #93c5fd !important; /* Light blue for subtitles */
 }
@@ -151,16 +168,29 @@ p {
   line-height: 1.6;
 }
 
+.light p {
+  color: #0f172a !important; /* Dark gray for better contrast */
+}
+
 .dark p {
   color: #e2e8f0 !important; /* Light gray for better contrast */
 }
 
 /* Step text */
+.light .text-secondary-700 {
+  color: #0f172a !important; /* Dark text for maximum contrast */
+}
+
 .dark .text-secondary-700 {
   color: #ffffff !important; /* White for maximum contrast */
 }
 
 /* Form labels and descriptions */
+.light .text-secondary-700, 
+.light .text-secondary-600 {
+  color: #0f172a !important; /* Dark text for better visibility */
+}
+
 .dark .text-secondary-700, 
 .dark .text-secondary-600 {
   color: #e2e8f0 !important; /* Light gray for better visibility */
@@ -179,6 +209,12 @@ input:focus, select:focus, textarea:focus {
   box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.3);
 }
 
+.light input, .light select, .light textarea {
+  border-color: #94a3b8; /* Medium gray border for better visibility */
+  background-color: #ffffff;
+  color: #0f172a; /* Dark color for text */
+}
+
 .dark input, .dark select, .dark textarea {
   border-color: #4b5563; /* Medium gray border */
   background-color: #1e293b; /* Slightly lighter than background */
@@ -186,6 +222,10 @@ input:focus, select:focus, textarea:focus {
 }
 
 /* Form input placeholders */
+.light ::placeholder {
+  color: #64748b !important;
+}
+
 .dark ::placeholder {
   color: #94a3b8 !important;
 }
@@ -193,6 +233,16 @@ input:focus, select:focus, textarea:focus {
 /* Buttons */
 button {
   font-weight: 500;
+}
+
+.light button:not(.theme-toggle) {
+  background-color: #0284c7 !important; /* Darker blue */
+  color: #ffffff !important;
+  border-color: #0284c7 !important;
+}
+
+.light button:not(.theme-toggle):hover {
+  background-color: #0369a1 !important; /* Even darker blue on hover */
 }
 
 .dark button:not(.theme-toggle) {
@@ -210,17 +260,33 @@ button {
   color: var(--secondary-700) !important;
 }
 
+.light .text-gray-500, .light .text-gray-600, .light .text-gray-700 {
+  color: #334155 !important; /* Darker gray for better visibility */
+}
+
 .dark .text-gray-500, .dark .text-gray-600, .dark .text-gray-700 {
   color: #e2e8f0 !important; /* Light gray for better visibility */
 }
 
 /* Progress bar enhancements */
+.light .bg-primary-600 {
+  background-color: #0284c7 !important; /* Darker blue */
+}
+
 .dark .bg-primary-600 {
   background-color: #3b82f6 !important; /* Bright blue */
 }
 
+.light .text-primary-600 {
+  color: #0284c7 !important; /* Darker blue for text */
+}
+
 .dark .text-primary-600 {
   color: #60a5fa !important; /* Lighter blue for text */
+}
+
+.light .text-primary-800 {
+  color: #075985 !important; /* Very dark blue */
 }
 
 .dark .text-primary-800 {
@@ -228,8 +294,16 @@ button {
 }
 
 /* Progress steps */
+.light .bg-secondary-100 {
+  background-color: #f1f5f9 !important; /* Light gray background */
+}
+
 .dark .bg-secondary-100 {
   background-color: #1e293b !important; /* Slightly lighter background */
+}
+
+.light .text-secondary-500 {
+  color: #334155 !important; /* Darker text */
 }
 
 .dark .text-secondary-500 {
@@ -237,8 +311,16 @@ button {
 }
 
 /* Active step */
+.light .ring-primary-600 {
+  --tw-ring-color: #0284c7 !important; /* Darker blue ring */
+}
+
 .dark .ring-primary-600 {
   --tw-ring-color: #3b82f6 !important; /* Bright blue ring */
+}
+
+.light .bg-primary-600 {
+  background-color: #0284c7 !important; /* Darker blue background */
 }
 
 .dark .bg-primary-600 {
@@ -246,6 +328,10 @@ button {
 }
 
 /* Card improvements */
+.light .bg-gray-50 {
+  background-color: #f8fafc !important; /* Very light gray background */
+}
+
 .dark .bg-gray-50 {
   background-color: #1e293b !important; /* Slightly lighter background */
 }
@@ -255,16 +341,29 @@ button {
 }
 
 /* Helper text */
+.light .text-sm.text-gray-500 {
+  color: #334155 !important; /* Darker gray */
+}
+
 .dark .text-sm.text-gray-500 {
   color: #cbd5e1 !important; /* Light gray */
 }
 
 /* Form container */
+.light .bg-secondary-100.rounded-xl {
+  background-color: #f1f5f9 !important; /* Light background with border */
+  border: 1px solid #e2e8f0;
+}
+
 .dark .bg-secondary-100.rounded-xl {
   background-color: #1e293b !important; /* Slightly lighter than background */
 }
 
 /* Family information sections */
+.light .text-blue-600 {
+  color: #0284c7 !important; /* Darker blue */
+}
+
 .dark .text-blue-600 {
   color: #60a5fa !important; /* Light blue */
 }
@@ -272,10 +371,33 @@ button {
 /* Theme toggle animation */
 .theme-toggle {
   transition: transform 0.5s ease;
+  background-color: var(--primary-600) !important;
+  color: white !important;
+  border: 2px solid var(--primary-700) !important;
 }
 
 .theme-toggle:hover {
   transform: rotate(45deg);
+  background-color: var(--primary-700) !important;
+}
+
+.dark .theme-toggle {
+  background-color: var(--primary-600) !important;
+  color: white !important;
+  border: 2px solid var(--primary-500) !important;
+}
+
+.dark .theme-toggle:hover {
+  background-color: var(--primary-500) !important;
+}
+
+/* Light mode gradient backgrounds */
+.light .from-blue-50 {
+  --tw-gradient-from: #f0f9ff !important;
+}
+
+.light .to-white {
+  --tw-gradient-to: #ffffff !important;
 }
 
 /* Fix for gradient backgrounds in dark mode */
@@ -287,9 +409,18 @@ button {
   --tw-gradient-to: #0f172a !important; /* Same as background */
 }
 
-/* Make sure ALL elements inherit dark mode */
+/* Make sure ALL elements inherit light/dark mode */
+.light * {
+  border-color: var(--border);
+}
+
 .dark * {
   border-color: var(--border);
+}
+
+/* Explicit light mode overrides */
+.light {
+  color-scheme: light;
 }
 
 /* Explicit dark mode overrides */
@@ -297,79 +428,67 @@ button {
   color-scheme: dark;
 }
 
-/* Main container */
+/* Main container - light mode */
+.light [class*="min-h-screen"] {
+  background-color: #ffffff !important;
+}
+
+/* Main container - dark mode */
 .dark [class*="min-h-screen"] {
   background-color: #0f172a !important;
 }
 
-/* Top level container */
+/* Top level container - light mode */
+.light [class*="min-h-screen bg-gradient"] {
+  background: linear-gradient(to bottom, #f0f9ff, #ffffff) !important;
+}
+
+/* Top level container - dark mode */
 .dark [class*="min-h-screen bg-gradient"] {
   background: linear-gradient(to bottom, #1e293b, #0f172a) !important;
 }
 
-/* Form container card */
-.dark .rounded-xl {
-  background-color: #1e293b !important;
-  color: #ffffff !important;
+/* Light mode specific styles for better contrast */
+.light input[type="text"],
+.light input[type="number"],
+.light input[type="email"],
+.light input[type="password"],
+.light input[type="date"],
+.light input[type="datetime-local"],
+.light input[type="month"],
+.light input[type="search"],
+.light input[type="tel"],
+.light input[type="time"],
+.light input[type="url"],
+.light input[type="week"] {
+  border: 1px solid #94a3b8;
 }
 
-/* Secondary text override */
-.dark .text-secondary-900 {
-  color: #ffffff !important;
+.light label {
+  color: #0f172a !important;
+  font-weight: 500;
 }
 
-/* Progress bar circles */
-.dark [class*="w-12 h-12"] {
-  background-color: #334155 !important;
-  color: #ffffff !important;
+.light .text-blue-500,
+.light .text-blue-600,
+.light .text-blue-700 {
+  color: #0369a1 !important;
 }
 
-.dark [class*="w-12 h-12"][aria-current="true"] {
-  background-color: #3b82f6 !important;
-  color: #ffffff !important;
-  --tw-ring-color: #60a5fa !important;
+.light .bg-blue-50 {
+  background-color: #f0f9ff !important;
+  border: 1px solid #e0f2fe;
 }
 
-/* Section titles */
-.dark h2[class*="text-xl font-semibold"] {
-  color: #93c5fd !important;
+.light .bg-white {
+  background-color: #ffffff !important;
+  border: 1px solid #f1f5f9;
 }
 
-/* Field labels */
-.dark label {
-  color: #e2e8f0 !important;
-}
-
-/* Form field specific fixes */
-.dark .input-wrapper {
-  background-color: transparent;
-}
-
-.dark input[type="text"],
-.dark input[type="number"],
-.dark input[type="email"],
-.dark select {
-  background-color: #1e293b;
-  color: #ffffff;
-  border: 1px solid #4b5563;
-  padding: 0.5rem 0.75rem;
-}
-
-/* Checkbox styles */
-.dark input[type="checkbox"] {
-  border: 1px solid #4b5563;
-}
-
-/* Light text for all paragraphs */
-.dark .text-blue-600,
-.dark .text-primary-600,
-.dark .text-gray-600 {
-  color: #bfdbfe;
-}
-
-/* Fix for form cards in dark mode - ensure they get proper background */
-.dark .bg-white {
-  background-color: #1e293b !important;
+.light button.bg-blue-500,
+.light button.bg-blue-600,
+.light button.bg-blue-700 {
+  background-color: #0284c7 !important;
   color: white !important;
 }
 
@@ -434,4 +553,71 @@ button {
 .dark .text-blue-600,
 .dark .text-blue-700 {
   color: #60a5fa !important;
+}
+
+/* Progress steps with better contrast in light mode */
+.light [class*="w-12 h-12"]:not([aria-current="step"]):not([data-state="completed"]) {
+  background-color: var(--secondary-300) !important;
+  border: 1px solid var(--secondary-400) !important;
+  color: var(--secondary-800) !important;
+}
+
+.light [class*="w-12 h-12"][aria-current="step"] {
+  background-color: var(--primary-600) !important;
+  color: white !important;
+  --tw-ring-color: var(--primary-200) !important;
+}
+
+.light [class*="w-12 h-12"][data-state="completed"] {
+  background-color: var(--primary-400) !important;
+  color: white !important;
+  border-color: var(--primary-500) !important;
+}
+
+/* Dark mode progress steps */
+.dark [class*="w-12 h-12"]:not([aria-current="step"]):not([data-state="completed"]) {
+  background-color: var(--secondary-700) !important;
+  border: 1px solid var(--secondary-600) !important;
+  color: var(--secondary-300) !important;
+}
+
+.dark [class*="w-12 h-12"][aria-current="step"] {
+  background-color: var(--primary-600) !important;
+  color: white !important;
+  --tw-ring-color: var(--primary-700) !important;
+}
+
+.dark [class*="w-12 h-12"][data-state="completed"] {
+  background-color: var(--primary-700) !important;
+  color: white !important;
+  border-color: var(--primary-600) !important;
+}
+
+/* Additional step label contrast improvements */
+.light [class*="w-12 h-12"][aria-current="step"] + span {
+  color: #0c4a6e !important; /* Very dark blue */
+  font-weight: 700 !important;
+  text-shadow: 0 0 1px rgba(255,255,255,0.7);
+}
+
+.light [class*="w-12 h-12"][data-state="completed"] + span {
+  color: #0284c7 !important; /* Dark blue */
+  font-weight: 600 !important;
+}
+
+.light [class*="w-12 h-12"]:not([aria-current="step"]):not([data-state="completed"]) + span {
+  color: #334155 !important; /* Dark gray */
+}
+
+.dark [class*="w-12 h-12"][aria-current="step"] + span {
+  color: #ffffff !important;
+  font-weight: 700 !important;
+  text-shadow: 0 0 2px rgba(0,0,0,0.3);
+}
+
+/* Add a subtle underline to the current step text */
+.light [class*="w-12 h-12"][aria-current="step"] + span,
+.dark [class*="w-12 h-12"][aria-current="step"] + span {
+  border-bottom: 2px solid currentColor;
+  padding-bottom: 2px;
 }

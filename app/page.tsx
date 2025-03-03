@@ -1,7 +1,7 @@
 "use client";
 
 import React from 'react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback, useMemo } from 'react';
 import { fetchMetalPrices } from './services/metalPrices';
 import FamilyForm from './components/forms/FamilyForm';
 import CashAssetsForm from './components/forms/CashAssetsForm';
@@ -32,28 +32,30 @@ export default function Home() {
   const [isCalculating, setIsCalculating] = useState(false);
 
   // Define steps
-  const steps: FormStepType[] = [
+  const steps: FormStepType[] = useMemo(() => [
     'family',
     'assets-cash',
     'assets-gold',
     'assets-silver',
     'results'
-  ];
+  ], []);
 
-  const stepTitles = [
+  const stepTitles = useMemo(() => [
     'Family Information',
     'Cash Assets',
     'Gold Assets',
     'Silver Assets',
     'Zakat Calculation Results'
-  ];
+  ], []);
 
   // Fetch metal prices on component mount
   useEffect(() => {
+    let isMounted = true;
+    
     const getMetalPrices = async () => {
       try {
         const prices = await fetchMetalPrices();
-        if (prices) {
+        if (prices && isMounted) {
           setGoldPrice(prices.gold);
           setSilverPrice(prices.silver);
         }
@@ -63,42 +65,46 @@ export default function Home() {
     };
 
     getMetalPrices();
+    
+    return () => {
+      isMounted = false;
+    };
   }, []);
 
-  const handleNext = () => {
+  const handleNext = useCallback(() => {
     if (currentStep === steps.length - 1) {
       // This is the last step, calculate Zakat
       calculateZakat();
     } else {
-      setCurrentStep(currentStep + 1);
+      setCurrentStep(prev => prev + 1);
     }
-  };
+  }, [currentStep, steps.length]);
 
-  const handlePrevious = () => {
-    setCurrentStep(currentStep - 1);
-  };
+  const handlePrevious = useCallback(() => {
+    setCurrentStep(prev => prev - 1);
+  }, []);
 
-  const handleStepClick = (step: number) => {
+  const handleStepClick = useCallback((step: number) => {
     setCurrentStep(step);
-  };
+  }, []);
 
-  const updateFamilyMembers = (members: FamilyMember[]) => {
+  const updateFamilyMembers = useCallback((members: FamilyMember[]) => {
     setFamilyMembers(members);
-  };
+  }, []);
 
-  const updateCashAssets = (assets: CashAsset[]) => {
+  const updateCashAssets = useCallback((assets: CashAsset[]) => {
     setCashAssets(assets);
-  };
+  }, []);
 
-  const updateGoldAssets = (assets: GoldAsset[]) => {
+  const updateGoldAssets = useCallback((assets: GoldAsset[]) => {
     setGoldAssets(assets);
-  };
+  }, []);
 
-  const updateSilverAssets = (assets: SilverAsset[]) => {
+  const updateSilverAssets = useCallback((assets: SilverAsset[]) => {
     setSilverAssets(assets);
-  };
+  }, []);
 
-  const getStepDescription = (step: FormStepType): string => {
+  const getStepDescription = useCallback((step: FormStepType): string => {
     switch (step) {
       case 'family':
         return 'Add information about yourself and your family members.';
@@ -113,7 +119,7 @@ export default function Home() {
       default:
         return '';
     }
-  };
+  }, []);
 
   const renderCurrentStep = () => {
     switch (steps[currentStep]) {
@@ -158,7 +164,7 @@ export default function Home() {
   };
 
   // Calculate Zakat for each family member
-  const calculateZakat = () => {
+  const calculateZakat = useCallback(() => {
     setIsCalculating(true);
     
     // Nisab thresholds (in USD)
@@ -255,7 +261,7 @@ export default function Home() {
     
     setZakatCalculations(calculations);
     setIsCalculating(false);
-  };
+  }, [familyMembers, cashAssets, goldAssets, silverAssets, goldPrice, silverPrice]);
 
   // Render Zakat calculation results
   const renderZakatResults = () => {
