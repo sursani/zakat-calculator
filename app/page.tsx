@@ -30,6 +30,7 @@ export default function Home() {
   const [silverPrice, setSilverPrice] = useState(1.2); // Default price per gram in USD
   const [zakatCalculations, setZakatCalculations] = useState<ZakatCalculation[]>([]);
   const [isCalculating, setIsCalculating] = useState(false);
+  const [completedSteps, setCompletedSteps] = useState<Set<number>>(new Set());
 
   // Define steps
   const steps: FormStepType[] = useMemo(() => [
@@ -162,22 +163,91 @@ export default function Home() {
     setIsCalculating(false);
   }, [familyMembers, cashAssets, goldAssets, silverAssets, goldPrice, silverPrice]);
 
+  // Validate current step
+  const validateCurrentStep = useCallback(() => {
+    const currentStepType = steps[currentStep];
+    
+    switch (currentStepType) {
+      case 'family':
+        // Primary member must have a name and spouse/children must have names if present
+        if (familyMembers.length === 0) return false;
+        
+        // Check if all family members have names
+        return familyMembers.every(member => {
+          // Primary member must have a name
+          if (member.relationship === 'primary') {
+            return member.name.trim() !== '';
+          }
+          
+          // Spouse must have a name if included
+          if (member.relationship === 'spouse') {
+            return member.name.trim() !== '';
+          }
+          
+          // Children must have names if included
+          if (member.relationship === 'child') {
+            return member.name.trim() !== '';
+          }
+          
+          return true;
+        });
+      
+      case 'assets-cash':
+        // No strict validation for cash assets required for progression
+        return true;
+      
+      case 'assets-gold':
+        // No strict validation for gold assets required for progression
+        return true;
+      
+      case 'assets-silver':
+        // No strict validation for silver assets required for progression
+        return true;
+      
+      case 'results':
+        return true;
+      
+      default:
+        return true;
+    }
+  }, [currentStep, steps, familyMembers]);
+
   const handleNext = useCallback(() => {
+    // Validate current step
+    if (!validateCurrentStep()) {
+      return;
+    }
+    
+    // Mark current step as completed
+    setCompletedSteps(prev => {
+      const updated = new Set(prev);
+      updated.add(currentStep);
+      return updated;
+    });
+    
     if (currentStep === steps.length - 1) {
       // This is the last step, calculate Zakat
       calculateZakat();
     } else {
       setCurrentStep(prev => prev + 1);
     }
-  }, [currentStep, steps.length, calculateZakat]);
+  }, [currentStep, steps.length, calculateZakat, validateCurrentStep]);
 
   const handlePrevious = useCallback(() => {
     setCurrentStep(prev => prev - 1);
   }, []);
 
   const handleStepClick = useCallback((step: number) => {
-    setCurrentStep(step);
-  }, []);
+    // Don't allow skipping ahead to steps that haven't been completed yet
+    const completedStepsArray = Array.from(completedSteps);
+    // Use -1 as fallback if there are no completed steps
+    const lastCompletedStep = completedStepsArray.length ? Math.max(...completedStepsArray) : -1;
+    
+    // Allow navigating to any step up to the next incomplete step
+    if (step <= lastCompletedStep + 1 && step <= steps.length - 1) {
+      setCurrentStep(step);
+    }
+  }, [completedSteps, steps.length]);
 
   const updateFamilyMembers = useCallback((members: FamilyMember[]) => {
     setFamilyMembers(members);
@@ -211,6 +281,11 @@ export default function Home() {
         return '';
     }
   }, []);
+
+  // Check if the next button should be disabled
+  const isNextDisabled = useMemo(() => {
+    return !validateCurrentStep();
+  }, [validateCurrentStep]);
 
   // Render Zakat calculation results
   const renderZakatResults = () => {
@@ -362,6 +437,7 @@ export default function Home() {
             steps={stepTitles} 
             currentStep={currentStep} 
             onStepClick={handleStepClick} 
+            completedSteps={Array.from(completedSteps)}
           />
           
           <div className="bg-white dark:bg-gray-800 rounded-xl shadow-md p-6 mb-8">
@@ -373,6 +449,7 @@ export default function Home() {
               isFirstStep={currentStep === 0}
               isLastStep={currentStep === steps.length - 1}
               nextButtonText={currentStep === steps.length - 1 ? 'Calculate Zakat' : 'Next'}
+              isNextDisabled={isNextDisabled}
             >
               {renderCurrentStep()}
             </FormStep>

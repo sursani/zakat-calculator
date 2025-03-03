@@ -42,12 +42,30 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ familyMembers, onUpdate }) => {
   const [children, setChildren] = useState<FamilyMember[]>(
     familyMembers.filter(member => member.relationship === 'child') || []
   );
+
+  const [errors, setErrors] = useState<{
+    primaryMember: string;
+    spouse: string;
+    children: string[];
+  }>({
+    primaryMember: '',
+    spouse: '',
+    children: []
+  });
   
   const handlePrimaryMemberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setPrimaryMember({
       ...primaryMember,
       name: e.target.value
     });
+
+    // Clear errors when user types
+    if (e.target.value.trim()) {
+      setErrors(prev => ({
+        ...prev,
+        primaryMember: ''
+      }));
+    }
   };
   
   const handleSpouseChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -55,6 +73,14 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ familyMembers, onUpdate }) => {
       ...spouse,
       name: e.target.value
     });
+
+    // Clear errors when user types
+    if (e.target.value.trim()) {
+      setErrors(prev => ({
+        ...prev,
+        spouse: ''
+      }));
+    }
   };
   
   const handleChildNameChange = (index: number, value: string) => {
@@ -73,6 +99,18 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ familyMembers, onUpdate }) => {
       };
     }
     setChildren(updatedChildren);
+
+    // Clear errors when user types
+    if (value.trim()) {
+      setErrors(prev => {
+        const updatedChildrenErrors = [...prev.children];
+        updatedChildrenErrors[index] = '';
+        return {
+          ...prev,
+          children: updatedChildrenErrors
+        };
+      });
+    }
   };
   
   const handleChildPubertyChange = (index: number, value: boolean) => {
@@ -103,10 +141,62 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ familyMembers, onUpdate }) => {
         });
       }
       setChildren(newChildren);
+
+      // Initialize errors for new children
+      setErrors(prev => {
+        const updatedChildrenErrors = [...prev.children];
+        for (let i = prev.children.length; i < count; i++) {
+          updatedChildrenErrors[i] = '';
+        }
+        return {
+          ...prev,
+          children: updatedChildrenErrors
+        };
+      });
     } else if (count < children.length) {
       // Remove excess children
       setChildren(children.slice(0, count));
+      
+      // Remove errors for removed children
+      setErrors(prev => ({
+        ...prev,
+        children: prev.children.slice(0, count)
+      }));
     }
+  };
+  
+  const validateForm = () => {
+    let isValid = true;
+    const newErrors = {
+      primaryMember: '',
+      spouse: '',
+      children: [...errors.children]
+    };
+
+    // Validate primary member
+    if (!primaryMember.name.trim()) {
+      newErrors.primaryMember = 'Please enter your name';
+      isValid = false;
+    }
+
+    // Validate spouse if selected
+    if (hasSpouse && !spouse.name.trim()) {
+      newErrors.spouse = 'Please enter your spouse\'s name';
+      isValid = false;
+    }
+
+    // Validate children
+    if (childrenCount > 0) {
+      for (let i = 0; i < childrenCount; i++) {
+        if (!children[i]?.name.trim()) {
+          newErrors.children[i] = `Please enter child ${i + 1}'s name`;
+          isValid = false;
+        }
+      }
+    }
+
+    setErrors(newErrors);
+    return isValid;
   };
   
   const updateFamilyMembers = React.useCallback(() => {
@@ -119,6 +209,9 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ familyMembers, onUpdate }) => {
     if (childrenCount > 0) {
       allMembers.push(...children.slice(0, childrenCount));
     }
+    
+    // Validate form before updating
+    validateForm();
     
     onUpdate(allMembers);
   }, [primaryMember, spouse, children, hasSpouse, childrenCount, onUpdate]);
@@ -136,6 +229,7 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ familyMembers, onUpdate }) => {
           onChange={handlePrimaryMemberChange}
           placeholder="Enter your name"
           fullWidth
+          error={errors.primaryMember}
         />
       </Card>
       
@@ -155,6 +249,7 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ familyMembers, onUpdate }) => {
             onChange={handleSpouseChange}
             placeholder="Enter spouse's name"
             fullWidth
+            error={errors.spouse}
           />
         )}
       </Card>
@@ -179,6 +274,7 @@ const FamilyForm: React.FC<FamilyFormProps> = ({ familyMembers, onUpdate }) => {
                   onChange={(e) => handleChildNameChange(index, e.target.value)}
                   placeholder={`Enter child ${index + 1}'s name`}
                   fullWidth
+                  error={errors.children[index]}
                 />
                 <Checkbox
                   label="Has reached puberty"
