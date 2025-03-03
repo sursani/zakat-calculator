@@ -1,6 +1,6 @@
 # Zakat Calculator
 
-A modern, user-friendly web application built with Next.js to help Muslims calculate their annual Zakat obligations accurately and efficiently.
+A modern, user-friendly web application built with Next.js to help Muslims calculate their annual Zakat obligations accurately and efficiently. This app was written in Cursor with 'vibe coding'. 
 
 ## Features
 
